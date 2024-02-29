@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet GeoJSON Example</title>
+    <!-- Include Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Include Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        #map { 
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+ 
+    <div id="map"></div>
+    
+    <script>
+       
+        var map = L.map('map').setView([20.87778769961249, 85.243823198392974], 10);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        fetch('./map.geojson')
+            .then(response => response.json())
+            .then(data => {
+                
+                L.geoJSON(data, {
+                    
+                    style: function(feature) {
+                       
+                        var distColor = '#ff0000'; 
+                        if (feature.properties && feature.properties.Dist_Name) {
+                            var distName = feature.properties.Dist_Name;
+                            if (distName === 'Angul') {
+                                distColor = '#00ff00'; 
+                            } else{
+                                distColor = '#0000ff';
+                            }
+                            
+                        }
+                        return {
+                            fillColor: distColor,
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            fillOpacity: 0.7
+                        };
+                    }
+                  
+                }).addTo(map);
+            })
+            .catch(error => {
+                console.error('Error fetching GeoJSON data:', error);
+            });
+    </script>
+</body>
+</html>
+
+
